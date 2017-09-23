@@ -1,7 +1,6 @@
-import urllib
+import requests
 from re import search
-import os
-from BeautifulSoup import BeautifulSoup as bs
+from bs4 import BeautifulSoup as bs
 
 ratingAll = "?&srt=1&r=10"
 
@@ -27,17 +26,15 @@ def extractLinks(site):
     e.g. 'https://www.fanfiction.net/crossovers/Legend-of-Zelda/123/'
     """
     links = []
-    urllib.urlretrieve(site, filename='index.html')
+    r = requests.get(site)
 
-    f = open('index.html', 'r')
-    for line in f.readlines()[461:]:
+    for line in r.text.split("\n")[461:]:
         if search('a href', line):
             try:
                 links.append(line.split('"')[1])
             except IndexError:
                 pass
 
-    os.remove('index.html')
     return links
 
 
@@ -52,13 +49,12 @@ def extractFics(site, keywords):
     priorities = []
 
     try:
-        urllib.urlretrieve(site, filename='index.html')
+        r = requests.get(site)
     except IOError:
-        print "IOError for site " + site
+        print("IOError for site " + site)
         return
 
-    f = open('index.html', 'r')
-    for line in f.readlines():
+    for line in r.text.split("\n"):
         if search(' by ', line):
             authors.append(bs(line).prettify('utf-8'))
 
@@ -71,8 +67,6 @@ def extractFics(site, keywords):
             descs.append(line)
             priorities.append(matches)
 
-    os.remove('index.html')
-
     return zip(authors, descs, priorities)
 
 
@@ -83,13 +77,13 @@ baseSite = 'https://www.fanfiction.net/crossovers/Legend-of-Zelda/123/'
 fics = []
 
 for site in extractLinks(baseSite):
-    print "getting fics from " + site
+    print("getting fics from " + site)
     url = 'https://www.fanfiction.net' + site + ratingAll
     fics.extend(extractFics(url, keywords))
 
 sortedFics = sorted(fics, key=lambda fic: fic[2])
 
-print "writing %d fics to file" % len(sortedFics)
+print("writing %d fics to file" % len(sortedFics))
 f = open("output.txt", "w")
 
 for fic in sortedFics:
