@@ -41,7 +41,8 @@ def extractLinks(site):
 def extractFics(site, keywords):
     """
     extract all fics for a given crossover site
-    e.g. https://www.fanfiction.net/Legend-of-Zelda-and-Harry-Potter-Crossovers/123/224/
+    e.g.
+    https://www.fanfiction.net/Legend-of-Zelda-and-Harry-Potter-Crossovers/123/224/
     """
     # TODO: strip HTML
     authors = []
