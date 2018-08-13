@@ -13,7 +13,8 @@ def wikipediaTypos():
     '''
 
     r = requests.get(site)
-    lines = bs(r.text, "lxml").pre.text.split('\n')
+    # Last line is blank for some reason
+    lines = bs(r.text, "lxml").pre.text.split('\n')[:-1]
     return [x.split('->')[0] for x in lines]
 
 ratingAll = "?&srt=1&r=10"
