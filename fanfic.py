@@ -33,6 +33,8 @@ keywords = [
         'angst',
         ] + wikipediaTypos()
 
+compiledRegexes = [re.compile(keyword, re.IGNORECASE) for keyword in keywords]
+
 
 def extractLinks(site):
     """
@@ -50,9 +52,9 @@ def matches(text):
     """
     matches = []
 
-    for keyword in keywords:
-        found = re.findall(keyword, text, flags=re.IGNORECASE)
-        matches.append((keyword, len(found)))
+    for rgx in compiledRegexes:
+        found = rgx.findall(text)
+        matches.append((rgx.pattern, len(found)))
 
     return matches
 
