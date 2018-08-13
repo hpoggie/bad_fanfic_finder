@@ -66,6 +66,9 @@ def matchesAsString(text):
             "\nTotal : " + str(total))
 
 
+linkRegex = re.compile('/u/*')
+
+
 def extractFics(site, keywords):
     """
     extract all fics for a given crossover site
@@ -79,13 +82,14 @@ def extractFics(site, keywords):
         print("IOError for site " + site)
         return
 
+    soup = bs(r.text, "lxml")(attrs={'class': 'stitle'})
+
     return [(
         x.get_text(),
-        x.parent(href=re.compile('/u/*'))[0].get_text(),
+        x.parent(href=linkRegex)[0].get_text(),
         x.parent.div.get_text(),
         matchesAsString(x.parent.get_text())
-        ) for x in
-            bs(r.text, "lxml")(attrs={'class': 'stitle'})]
+        ) for x in soup]
 
 
 if __name__ == '__main__':
