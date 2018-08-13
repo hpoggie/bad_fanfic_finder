@@ -2,22 +2,35 @@ import requests
 import re
 from bs4 import BeautifulSoup as bs
 
+
+def wikipediaTypos():
+    """
+    Grab list of common typos from Wikipedia.
+    Typos are an excellent indicator of a low quality fanfic.
+    """
+    site = '''
+    https://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/For_machines
+    '''
+
+    r = requests.get(site)
+    lines = bs(r.text, "lxml").pre.text.split('\n')
+    return [x.split('->')[0] for x in lines]
+
 ratingAll = "?&srt=1&r=10"
 
 keywords = [
         # typos (TODO: add more)
-        '[Dd]ont',
-        '[tT]eh',
+        'dont',
         # m-rated stuff tends to be more cringeworthy
         'Rated: M',
         # concepts that frequently lead to disaster
         'OC',
         'OP',
-        '[Bb]ashing',
+        'bashing',
         'OOC',
-        '[eE]xperimental',
-        '[aA]ngst',
-        ]
+        'experimental',
+        'angst',
+        ] + wikipediaTypos()
 
 
 def extractLinks(site):
@@ -48,7 +61,7 @@ def extractFics(site, keywords):
         x.parent(href=re.compile('/u/*'))[0].get_text(),
         x.parent.div.get_text(),
         sum(count for count in [
-            len(re.findall(keyword, x.parent.get_text()))
+            len(re.findall(keyword, x.parent.get_text(), flags=re.IGNORECASE))
             for keyword in keywords])
         ) for x in
             bs(r.text, "lxml")(attrs={'class': 'stitle'})]
