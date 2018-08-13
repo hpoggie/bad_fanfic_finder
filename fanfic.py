@@ -44,13 +44,24 @@ def extractLinks(site):
             bs(r.text, 'lxml').find(id='list_output').td('div')]
 
 
-def nMatches(text):
+def matches(text):
     """
-    Return the number of keyword matches in text
+    Return the list of keyword matches in text
     """
-    return sum(count for count in [
-        len(re.findall(keyword, text, flags=re.IGNORECASE))
-        for keyword in keywords])
+    matches = []
+
+    for keyword in keywords:
+        found = re.findall(keyword, text, flags=re.IGNORECASE)
+        matches.append((keyword, len(found)))
+
+    return matches
+
+
+def matchesAsString(text):
+    ms = matches(text)
+    total = sum(t[1] for t in ms)
+    return ('\n'.join(str(t) for t in ms if t[1] > 0) +
+            "\nTotal : " + str(total))
 
 
 def extractFics(site, keywords):
@@ -70,7 +81,7 @@ def extractFics(site, keywords):
         x.get_text(),
         x.parent(href=re.compile('/u/*'))[0].get_text(),
         x.parent.div.get_text(),
-        nMatches(x.parent.get_text())
+        matchesAsString(x.parent.get_text())
         ) for x in
             bs(r.text, "lxml")(attrs={'class': 'stitle'})]
 
@@ -96,5 +107,5 @@ if __name__ == '__main__':
             f.write(fic[0] + "\n")
             f.write(fic[1] + "\n")
             f.write(fic[2] + "\n")
-            f.write(str(fic[3]) + "\n")
+            f.write(fic[3] + "\n")
             f.write("\n")
