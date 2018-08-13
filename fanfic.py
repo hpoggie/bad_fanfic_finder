@@ -82,13 +82,11 @@ if __name__ == '__main__':
     sortedFics = sorted(fics, key=lambda fic: fic[3])
 
     print("writing %d fics to file" % len(sortedFics))
-    f = open("output.txt", "w")
 
-    for fic in sortedFics:
-        f.write(fic[0] + "\n")
-        f.write(fic[1] + "\n")
-        f.write(fic[2] + "\n")
-        f.write(str(fic[3]) + "\n")
-        f.write("\n")
-
-    f.close()
+    with open("output.txt", "w") as f:
+        for fic in sortedFics:
+            f.write(fic[0] + "\n")
+            f.write(fic[1] + "\n")
+            f.write(fic[2] + "\n")
+            f.write(str(fic[3]) + "\n")
+            f.write("\n")
