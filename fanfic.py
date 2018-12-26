@@ -22,6 +22,7 @@ ratingAll = "?&srt=1&r=10"
 keywords = [
         # typos (TODO: add more)
         'dont',
+        'Gannon',
         # m-rated stuff tends to be more cringeworthy
         'Rated: M',
         # concepts that frequently lead to disaster
