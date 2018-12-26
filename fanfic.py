@@ -59,8 +59,7 @@ def matches(text):
     return matches
 
 
-def matchesAsString(text):
-    ms = matches(text)
+def matchesAsString(ms):
     total = sum(t[1] for t in ms)
     return ('\n'.join(str(t) for t in ms if t[1] > 0) +
             "\nTotal : " + str(total))
@@ -84,12 +83,19 @@ def extractFics(site, keywords):
 
     soup = bs(r.text, "lxml")(attrs={'class': 'stitle'})
 
-    return [(
-        x.get_text(),
-        x.parent(href=linkRegex)[0].get_text(),
-        x.parent.div.get_text(),
-        matchesAsString(x.parent.get_text())
-        ) for x in soup]
+    extracted = []
+
+    for x in soup:
+        ms = matches(x.parent.get_text())
+        total = sum(t[1] for t in ms)
+
+        extracted.append((x.get_text(),
+            x.parent(href=linkRegex)[0].get_text(),
+            x.parent.div.get_text(),
+            matchesAsString(ms),
+            total))
+
+    return extracted
 
 
 if __name__ == '__main__':
@@ -104,7 +110,7 @@ if __name__ == '__main__':
         url = 'https://www.fanfiction.net' + site + ratingAll
         fics.extend(extractFics(url, keywords))
 
-    sortedFics = sorted(fics, key=lambda fic: fic[3])
+    sortedFics = sorted(fics, key=lambda fic: fic[4])
 
     print("writing %d fics to file" % len(sortedFics))
 
